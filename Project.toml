@@ -1,0 +1,16 @@
+name = "AntiRheumaticDrugs"
+uuid = "7123f3dd-e172-456f-9a19-c2b7ef93fd76"
+version = "0.1.0"
+authors = ["simonsteiger <simon.j.steiger@gmail.com> and contributors"]
+
+[deps]
+DrugInterface = "ecbac44d-373e-48a5-bcbb-08f349367545"
+
+[compat]
+julia = "1.11"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

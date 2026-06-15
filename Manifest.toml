@@ -1,0 +1,15 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.12.6"
+manifest_format = "2.0"
+project_hash = "c90916c1bcbee1f895a3d7dcb34cf3ba3363a3db"
+
+[[deps.AntiRheumaticDrugs]]
+path = "."
+uuid = "7123f3dd-e172-456f-9a19-c2b7ef93fd76"
+version = "0.1.0"
+
+[[deps.DrugInterface]]
+path = "/Users/simonsteiger/Documents/phd/02_outcomes/DrugInterface"
+uuid = "ecbac44d-373e-48a5-bcbb-08f349367545"
+version = "0.1.0"
