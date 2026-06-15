@@ -65,8 +65,8 @@ Topical()
 """
 route_of(d::AntiRheumaticDrug) = d.route
 
-import DrugInterface: substance, mode_of_action,
-    is_csdmard, is_bdmard, is_tsdmard, is_cortisone
+import DrugInterface:
+    substance, mode_of_action, is_csdmard, is_bdmard, is_tsdmard, is_cortisone
 
 """
     is_class(x, T::Type{<:DrugClass}) -> Bool
@@ -88,9 +88,9 @@ is_class(x, ::Type{T}) where {T<:DrugClass} = category(x) <: T
 
 # primitive interface methods on the concrete registry type:
 is_cortisone(d::AntiRheumaticDrug) = is_class(d, Cortisone)
-is_csdmard(d::AntiRheumaticDrug)   = is_class(d, csDMARD)
-is_bdmard(d::AntiRheumaticDrug)    = is_class(d, bDMARD)
-is_tsdmard(d::AntiRheumaticDrug)   = is_class(d, tsDMARD)
+is_csdmard(d::AntiRheumaticDrug) = is_class(d, csDMARD)
+is_bdmard(d::AntiRheumaticDrug) = is_class(d, bDMARD)
+is_tsdmard(d::AntiRheumaticDrug) = is_class(d, tsDMARD)
 
 substance(d::AntiRheumaticDrug) = d.name
 
@@ -107,8 +107,8 @@ julia> is_systemic(classify("L04AB04")), is_systemic(classify("D07AC01"))
 """
 is_systemic(x) = route_of(x) isa Systemic
 
-const MOA_NODES = (JAKi, PDE4i, TNFi, CD20i, IFNi, CD28i, BAFFi,
-                   IL1i, IL5i, IL6i, IL17i, IL23i, IL12_23i)
+const MOA_NODES =
+    (JAKi, PDE4i, TNFi, CD20i, IFNi, CD28i, BAFFi, IL1i, IL5i, IL6i, IL17i, IL23i, IL12_23i)
 const CLASS_NODES = (Cortisone, csDMARD, bDMARD, tsDMARD)
 
 # walk C and its supertypes, return the first that is in `nodes`
@@ -186,7 +186,7 @@ julia> moa_symbol(classify("L04AB04"))
 :TNFi
 ```
 """
-moa_symbol(x)   = label(mode_of_action(category(x)))
+moa_symbol(x) = label(mode_of_action(category(x)))
 
 """
     class_symbol(x) -> Symbol

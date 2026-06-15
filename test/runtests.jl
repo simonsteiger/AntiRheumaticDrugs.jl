@@ -5,22 +5,48 @@ using DrugInterface
 @testset "AntiRheumaticDrugs" begin
     @test true  # scaffold smoke test, replaced as tasks land
 
-    using AntiRheumaticDrugs: DrugClass, Cortisone, csDMARD, btsDMARD, tsDMARD, bDMARD,
-        JAKi, PDE4i, TNFi, CD20i, IFNi, CD28i, BAFFi, ILi,
-        IL1i, IL5i, IL6i, IL17i, IL23i, IL12_23i
+    using AntiRheumaticDrugs:
+        DrugClass,
+        Cortisone,
+        csDMARD,
+        btsDMARD,
+        tsDMARD,
+        bDMARD,
+        JAKi,
+        PDE4i,
+        TNFi,
+        CD20i,
+        IFNi,
+        CD28i,
+        BAFFi,
+        ILi,
+        IL1i,
+        IL5i,
+        IL6i,
+        IL17i,
+        IL23i,
+        IL12_23i
 
     @testset "drug class hierarchy" begin
-        @test JAKi  <: tsDMARD <: btsDMARD <: DrugClass
+        @test JAKi <: tsDMARD <: btsDMARD <: DrugClass
         @test PDE4i <: tsDMARD
-        @test TNFi  <: bDMARD  <: btsDMARD
-        @test IL6i  <: ILi     <: bDMARD
+        @test TNFi <: bDMARD <: btsDMARD
+        @test IL6i <: ILi <: bDMARD
         @test CD28i <: bDMARD && BAFFi <: bDMARD && IFNi <: bDMARD && CD20i <: bDMARD
         @test Cortisone <: DrugClass && csDMARD <: DrugClass
         @test !(Cortisone <: btsDMARD) && !(csDMARD <: btsDMARD)
     end
 
-    using AntiRheumaticDrugs: AbstractRoute, Systemic, Local,
-        Topical, Ophthalmic, Nasal, Inhaled, Intestinal, Rectal
+    using AntiRheumaticDrugs:
+        AbstractRoute,
+        Systemic,
+        Local,
+        Topical,
+        Ophthalmic,
+        Nasal,
+        Inhaled,
+        Intestinal,
+        Rectal
 
     @testset "route hierarchy" begin
         @test Systemic <: AbstractRoute
@@ -29,7 +55,7 @@ using DrugInterface
             @test R <: Local
         end
         @test Systemic() isa Systemic
-        @test Topical()  isa Local
+        @test Topical() isa Local
         @test !(Systemic() isa Local)
     end
 
@@ -50,7 +76,8 @@ using DrugInterface
         @test is_registered("L04AB04")
         @test !is_registered("ZZZZZZ")
         @test try_classify("ZZZZZZ") === nothing
-        @test try_classify("L04AB04") !== nothing && try_classify("L04AB04").name == "Adalimumab"
+        @test try_classify("L04AB04") !== nothing &&
+              try_classify("L04AB04").name == "Adalimumab"
         @test classify("L04AB04").name == "Adalimumab"
         @test category(classify("L04AB04")) === TNFi
         @test category(classify("H02AB06")) === Cortisone
@@ -67,8 +94,16 @@ using DrugInterface
         end
     end
 
-    using AntiRheumaticDrugs: route_of, drug_of, is_class,
-        is_cortisone, is_csdmard, is_bdmard, is_tsdmard, is_btsdmard, is_dmard
+    using AntiRheumaticDrugs:
+        route_of,
+        drug_of,
+        is_class,
+        is_cortisone,
+        is_csdmard,
+        is_bdmard,
+        is_tsdmard,
+        is_btsdmard,
+        is_dmard
 
     @testset "class predicates" begin
         ada = classify("L04AB04")   # TNFi
@@ -133,11 +168,11 @@ using DrugInterface
     using AntiRheumaticDrugs: count_modes_of_action, is_d2t
 
     @testset "mode-of-action counting" begin
-        tnf  = classify("L04AB04")  # TNFi
-        il6  = classify("L04AC07")  # IL6i
-        jak  = classify("L04AF02")  # JAKi
+        tnf = classify("L04AB04")  # TNFi
+        il6 = classify("L04AC07")  # IL6i
+        jak = classify("L04AF02")  # JAKi
         tnf2 = classify("L04AB01")  # TNFi (different drug, same MoA)
-        mtx  = classify("L04AX03")  # csDMARD — ignored
+        mtx = classify("L04AX03")  # csDMARD — ignored
         @test count_modes_of_action([tnf, il6, jak]) == 3
         @test count_modes_of_action([tnf, tnf2]) == 1          # same MoA
         @test count_modes_of_action([tnf, mtx]) == 1           # csDMARD ignored
@@ -156,17 +191,57 @@ using DrugInterface
         @test !is_registered("V04CL")                          # removed (not a steroid)
         # legacy ATC codes still present in SRQ data (2012-2024) map to the
         # same substance as their current codes (found via golden-master audit)
-        @test category(classify("L04AA13")) === csDMARD && classify("L04AA13").name == "Leflunomide"
-        @test category(classify("L04AA26")) === BAFFi   && classify("L04AA26").name == "Belimumab"
+        @test category(classify("L04AA13")) === csDMARD &&
+              classify("L04AA13").name == "Leflunomide"
+        @test category(classify("L04AA26")) === BAFFi &&
+              classify("L04AA26").name == "Belimumab"
         # every expected substance present at least once
-        expected = ["Betamethasone","Methylprednisolone","Prednisolone","Hydrocortisone",
-            "Dexamethasone","Budesonide","Azathioprine","Ciclosporin","Hydroxychloroquine",
-            "Chloroquine","Leflunomide","Methotrexate","Mycophenolic acid","Sirolimus",
-            "Sulfasalazine","Tacrolimus","Voclosporin","Filgotinib","Baricitinib",
-            "Upadacitinib","Tofacitinib","Apremilast","Obinutuzumab","Rituximab","Adalimumab",
-            "Etanercept","Certolizumab pegol","Infliximab","Golimumab","Anifrolumab","Anakinra",
-            "Canakinumab","Benralizumab","Mepolizumab","Tocilizumab","Sarilumab","Ixekizumab",
-            "Secukinumab","Bimekizumab","Guselkumab","Risankizumab","Ustekinumab","Abatacept","Belimumab"]
+        expected = [
+            "Betamethasone",
+            "Methylprednisolone",
+            "Prednisolone",
+            "Hydrocortisone",
+            "Dexamethasone",
+            "Budesonide",
+            "Azathioprine",
+            "Ciclosporin",
+            "Hydroxychloroquine",
+            "Chloroquine",
+            "Leflunomide",
+            "Methotrexate",
+            "Mycophenolic acid",
+            "Sirolimus",
+            "Sulfasalazine",
+            "Tacrolimus",
+            "Voclosporin",
+            "Filgotinib",
+            "Baricitinib",
+            "Upadacitinib",
+            "Tofacitinib",
+            "Apremilast",
+            "Obinutuzumab",
+            "Rituximab",
+            "Adalimumab",
+            "Etanercept",
+            "Certolizumab pegol",
+            "Infliximab",
+            "Golimumab",
+            "Anifrolumab",
+            "Anakinra",
+            "Canakinumab",
+            "Benralizumab",
+            "Mepolizumab",
+            "Tocilizumab",
+            "Sarilumab",
+            "Ixekizumab",
+            "Secukinumab",
+            "Bimekizumab",
+            "Guselkumab",
+            "Risankizumab",
+            "Ustekinumab",
+            "Abatacept",
+            "Belimumab",
+        ]
         present = Set(d.name for d in values(REGISTRY))
         @test all(in(present), expected)
         # every registry value's category is a leaf admitted by the tree

@@ -15,7 +15,7 @@ abstract type DrugClass end
 abstract type Cortisone <: DrugClass end
 
 "Conventional synthetic DMARD (disease-modifying antirheumatic drug)."
-abstract type csDMARD   <: DrugClass end
+abstract type csDMARD <: DrugClass end
 
 """
     btsDMARD
@@ -24,28 +24,28 @@ Umbrella for biologic *and* targeted synthetic DMARDs — the common supertype o
 [`bDMARD`](@ref) and [`tsDMARD`](@ref). Membership here is what
 [`is_btsdmard`](@ref) and [`count_modes_of_action`](@ref) key on.
 """
-abstract type btsDMARD  <: DrugClass end
+abstract type btsDMARD <: DrugClass end
 
 "Targeted synthetic DMARD (e.g. [`JAKi`](@ref), [`PDE4i`](@ref)). A [`btsDMARD`](@ref)."
-abstract type tsDMARD   <: btsDMARD end
+abstract type tsDMARD <: btsDMARD end
 
 "Biologic DMARD (e.g. [`TNFi`](@ref), [`ILi`](@ref)). A [`btsDMARD`](@ref)."
-abstract type bDMARD    <: btsDMARD end
+abstract type bDMARD <: btsDMARD end
 
 "Janus kinase inhibitor (\"JAK inhibitor\"). A targeted synthetic DMARD ([`tsDMARD`](@ref))."
-abstract type JAKi  <: tsDMARD end
+abstract type JAKi <: tsDMARD end
 
 "Phosphodiesterase-4 inhibitor. A targeted synthetic DMARD ([`tsDMARD`](@ref))."
 abstract type PDE4i <: tsDMARD end
 
 "Tumour necrosis factor inhibitor. A biologic DMARD ([`bDMARD`](@ref))."
-abstract type TNFi  <: bDMARD end
+abstract type TNFi <: bDMARD end
 
 "Anti-CD20 B-cell-depleting antibody. A biologic DMARD ([`bDMARD`](@ref))."
 abstract type CD20i <: bDMARD end
 
 "Type-I interferon (IFNAR) inhibitor. A biologic DMARD ([`bDMARD`](@ref))."
-abstract type IFNi  <: bDMARD end
+abstract type IFNi <: bDMARD end
 
 "CD80/86–CD28 co-stimulation inhibitor (abatacept). A biologic DMARD ([`bDMARD`](@ref))."
 abstract type CD28i <: bDMARD end
@@ -60,22 +60,22 @@ Interleukin-inhibitor umbrella — the supertype of the `IL*i` types
 ([`IL1i`](@ref), [`IL5i`](@ref), [`IL6i`](@ref), [`IL17i`](@ref),
 [`IL23i`](@ref), [`IL12_23i`](@ref)). A biologic DMARD ([`bDMARD`](@ref)).
 """
-abstract type ILi   <: bDMARD end
+abstract type ILi <: bDMARD end
 
 "Interleukin-1 inhibitor. An [`ILi`](@ref) biologic DMARD."
-abstract type IL1i     <: ILi end
+abstract type IL1i <: ILi end
 
 "Interleukin-5 inhibitor. An [`ILi`](@ref) biologic DMARD."
-abstract type IL5i     <: ILi end
+abstract type IL5i <: ILi end
 
 "Interleukin-6 inhibitor. An [`ILi`](@ref) biologic DMARD."
-abstract type IL6i     <: ILi end
+abstract type IL6i <: ILi end
 
 "Interleukin-17 inhibitor. An [`ILi`](@ref) biologic DMARD."
-abstract type IL17i    <: ILi end
+abstract type IL17i <: ILi end
 
 "Interleukin-23 inhibitor. An [`ILi`](@ref) biologic DMARD."
-abstract type IL23i    <: ILi end
+abstract type IL23i <: ILi end
 
 "Interleukin-12/23 (shared p40) inhibitor (ustekinumab). An [`ILi`](@ref) biologic DMARD."
 abstract type IL12_23i <: ILi end
@@ -102,22 +102,22 @@ Umbrella for non-systemic routes: [`Topical`](@ref), [`Ophthalmic`](@ref),
 abstract type Local <: AbstractRoute end
 
 "Skin application. A [`Local`](@ref) route."
-struct Topical    <: Local end
+struct Topical <: Local end
 
 "Eye application. A [`Local`](@ref) route."
 struct Ophthalmic <: Local end
 
 "Nasal application. A [`Local`](@ref) route."
-struct Nasal      <: Local end
+struct Nasal <: Local end
 
 "Inhalation (airways/lungs). A [`Local`](@ref) route."
-struct Inhaled    <: Local end
+struct Inhaled <: Local end
 
 "Enteric, gut-local action. A [`Local`](@ref) route."
 struct Intestinal <: Local end
 
 "Rectal application. A [`Local`](@ref) route."
-struct Rectal     <: Local end
+struct Rectal <: Local end
 
 # ---- drug struct ----
 """
