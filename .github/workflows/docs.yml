@@ -32,8 +32,16 @@ jobs:
         shell: julia --color=yes --project=docs {0}
         run: |
           using Pkg
-          Pkg.develop(; path=".")
-          Pkg.develop(; url="https://github.com/simonsteiger/DrugInterface.jl")
+          # AntiRheumaticDrugs and its dep DrugInterface are both unregistered.
+          # Develop both in a single call so resolution runs once with both
+          # present (separate calls fail: each resolve chokes on the other
+          # unregistered dep still listed in docs/Project.toml). Developing
+          # DrugInterface as a git checkout also lets Documenter read its
+          # remote/commit to generate source links.
+          Pkg.develop([
+              PackageSpec(url="https://github.com/simonsteiger/DrugInterface.jl"),
+              PackageSpec(path="."),
+          ])
           Pkg.instantiate()
 
       - name: Build and deploy docs
