@@ -33,6 +33,7 @@ jobs:
         run: |
           using Pkg
           Pkg.develop(; path=".")
+          Pkg.develop(; url="https://github.com/simonsteiger/DrugInterface.jl")
           Pkg.instantiate()
 
       - name: Build and deploy docs
