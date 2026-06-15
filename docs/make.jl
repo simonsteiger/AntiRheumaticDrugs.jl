@@ -1,6 +1,7 @@
 using AntiRheumaticDrugs
 using DrugInterface
 using Documenter, DocumenterVitepress
+using Documenter: Remotes
 
 # The registry provides concrete drugs, so doctests need nothing beyond `using`.
 DocMeta.setdocmeta!(
@@ -12,6 +13,9 @@ DocMeta.setdocmeta!(
 
 makedocs(;
     modules = [AntiRheumaticDrugs, DrugInterface],
+    remotes = Dict(
+        pkgdir(DrugInterface) => Remotes.GitHub("simonsteiger", "DrugInterface.jl"),
+    ),
     authors = "Simon Steiger",
     repo = "https://github.com/simonsteiger/AntiRheumaticDrugs.jl",
     sitename = "AntiRheumaticDrugs.jl",
