@@ -6,4 +6,4 @@ DrugInterface = "ecbac44d-373e-48a5-bcbb-08f349367545"
 
 [sources]
 AntiRheumaticDrugs = {url = "https://github.com/simonsteiger/AntiRheumaticDrugs.jl"}
-DrugInterface = {url = "https://github.com/simonsteiger/DrugInterface.jl"}
+DrugInterface = {rev = "main", url = "https://github.com/simonsteiger/DrugInterface.jl"}
