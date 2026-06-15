@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "AntiRheumaticDrugs.jl"
-  text: "A typed, ATC-coded registry of antirheumatic drugs"
-  tagline: Classify drugs by ATC code into a class & route taxonomy, then summarise a treatment mix
+  text: "An ATC-registry of antirheumatic drugs"
+  tagline: Classify drugs by ATC code and benefit from a rich type hierarchy
   actions:
     - theme: brand
       text: Get started
@@ -15,7 +15,7 @@ hero:
       link: /api
     - theme: alt
       text: View on GitHub
-      link: https://github.com/simonsteiger/02_outcomes
+      link: https://github.com/simonsteiger/AntiRheumaticDrugs.jl
 ---
 ```
 
@@ -31,11 +31,11 @@ values, each tagged at the type level with its drug class (`TNFi`, `JAKi`,
 
 ## Installation
 
-This package lives inside the `02_outcomes` monorepo and is developed locally:
+This package is not yet registered. Add it via URL:
 
 ```julia
 using Pkg
-Pkg.develop(path = "path/to/02_outcomes/AntiRheumaticDrugs")
+Pkg.add(url = "https://github.com/simonsteiger/AntiRheumaticDrugs.jl")
 ```
 
 ## Quick example

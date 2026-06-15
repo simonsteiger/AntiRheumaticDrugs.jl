@@ -19,7 +19,7 @@ makedocs(;
         repo            = "https://github.com/simonsteiger/02_outcomes",
         devbranch       = "main",
         devurl          = "dev",
-        build_vitepress = true,
+        build_vitepress = false,
     ),
     pages = [
         "Home" => "index.md",
