@@ -13,13 +13,12 @@ DocMeta.setdocmeta!(
 makedocs(;
     modules  = [AntiRheumaticDrugs, DrugInterface],
     authors  = "Simon Steiger",
-    repo     = "https://github.com/simonsteiger/02_outcomes",
+    repo     = "https://github.com/simonsteiger/AntiRheumaticDrugs.jl",
     sitename = "AntiRheumaticDrugs.jl",
     format = DocumenterVitepress.MarkdownVitepress(
-        repo            = "https://github.com/simonsteiger/02_outcomes",
-        devbranch       = "main",
-        devurl          = "dev",
-        build_vitepress = false,
+        repo      = "https://github.com/simonsteiger/AntiRheumaticDrugs.jl",
+        devbranch = "main",
+        devurl    = "dev",
     ),
     pages = [
         "Home" => "index.md",
@@ -37,8 +36,7 @@ makedocs(;
 )
 
 DocumenterVitepress.deploydocs(;
-    repo         = "github.com/simonsteiger/02_outcomes.git",
+    repo         = "github.com/simonsteiger/AntiRheumaticDrugs.jl.git",
     devbranch    = "main",
-    dirname      = "AntiRheumaticDrugs",   # subfolder: TreatmentTrajectories owns the gh-pages root
     push_preview = true,
 )
