@@ -77,7 +77,7 @@ using DrugInterface
         @test !is_registered("ZZZZZZ")
         @test try_classify("ZZZZZZ") === nothing
         @test try_classify("L04AB04") !== nothing &&
-              try_classify("L04AB04").name == "Adalimumab"
+            try_classify("L04AB04").name == "Adalimumab"
         @test classify("L04AB04").name == "Adalimumab"
         @test category(classify("L04AB04")) === TNFi
         @test category(classify("H02AB06")) === Cortisone
@@ -152,6 +152,17 @@ using DrugInterface
         @test_throws MethodError mode_of_action(classify("H02AB06"))
     end
 
+    @testset "node enumeration" begin
+        @test moa_nodes() === AntiRheumaticDrugs.MOA_NODES
+        @test class_nodes() === AntiRheumaticDrugs.CLASS_NODES
+        @test TNFi in moa_nodes()
+        @test IL12_23i in moa_nodes()
+        @test Set(class_nodes()) == Set((Cortisone, csDMARD, bDMARD, tsDMARD))
+        # accessors are exported (resolve without qualification)
+        @test isdefined(@__MODULE__, :moa_nodes)
+        @test isdefined(@__MODULE__, :class_nodes)
+    end
+
     using AntiRheumaticDrugs: label, pretty, moa_symbol, class_symbol
 
     @testset "materialization" begin
@@ -192,9 +203,9 @@ using DrugInterface
         # legacy ATC codes still present in SRQ data (2012-2024) map to the
         # same substance as their current codes (found via golden-master audit)
         @test category(classify("L04AA13")) === csDMARD &&
-              classify("L04AA13").name == "Leflunomide"
+            classify("L04AA13").name == "Leflunomide"
         @test category(classify("L04AA26")) === BAFFi &&
-              classify("L04AA26").name == "Belimumab"
+            classify("L04AA26").name == "Belimumab"
         # every expected substance present at least once
         expected = [
             "Betamethasone",

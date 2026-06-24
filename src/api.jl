@@ -84,7 +84,7 @@ julia> is_class(classify("L04AF01"), bDMARD)   # tofacitinib is a JAKi <: tsDMAR
 false
 ```
 """
-is_class(x, ::Type{T}) where {T<:DrugClass} = category(x) <: T
+is_class(x, ::Type{T}) where {T <: DrugClass} = category(x) <: T
 
 # primitive interface methods on the concrete registry type:
 is_cortisone(d::AntiRheumaticDrug) = is_class(d, Cortisone)
@@ -111,8 +111,23 @@ const MOA_NODES =
     (JAKi, PDE4i, TNFi, CD20i, IFNi, CD28i, BAFFi, IL1i, IL5i, IL6i, IL17i, IL23i, IL12_23i)
 const CLASS_NODES = (Cortisone, csDMARD, bDMARD, tsDMARD)
 
+"""
+    moa_nodes() -> Tuple
+
+The tuple of all mode-of-action node types — the targets of
+[`mode_of_action`](@ref). For iterating MOAs (e.g. plot facets).
+"""
+moa_nodes() = MOA_NODES
+
+"""
+    class_nodes() -> Tuple
+
+The tuple of all class node types — the targets of [`drug_class`](@ref).
+"""
+class_nodes() = CLASS_NODES
+
 # walk C and its supertypes, return the first that is in `nodes`
-function _project(::Type{C}, nodes) where {C<:DrugClass}
+function _project(::Type{C}, nodes) where {C <: DrugClass}
     T = C
     while T !== DrugClass
         T in nodes && return T
@@ -121,7 +136,7 @@ function _project(::Type{C}, nodes) where {C<:DrugClass}
     error("no level node found for $C in $nodes")
 end
 
-mode_of_action(::Type{C}) where {C<:btsDMARD} = _project(C, MOA_NODES)
+mode_of_action(::Type{C}) where {C <: btsDMARD} = _project(C, MOA_NODES)
 mode_of_action(d::AntiRheumaticDrug) = mode_of_action(category(d))
 
 """
@@ -138,7 +153,7 @@ julia> class_symbol(classify("L04AB04"))   # drug_class is bDMARD
 :bDMARD
 ```
 """
-drug_class(::Type{C}) where {C<:DrugClass} = _project(C, CLASS_NODES)
+drug_class(::Type{C}) where {C <: DrugClass} = _project(C, CLASS_NODES)
 drug_class(x) = drug_class(category(x))
 
 """
@@ -155,7 +170,7 @@ julia> label(TNFi)
 """
 label(::Type{T}) where {T} = Symbol(nameof(T))
 
-const _PRETTY = Dict{DataType,String}(IL12_23i => "IL-12/23")
+const _PRETTY = Dict{DataType, String}(IL12_23i => "IL-12/23")
 
 """
     pretty(T::Type) -> String
