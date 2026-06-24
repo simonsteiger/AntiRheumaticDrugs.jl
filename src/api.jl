@@ -132,6 +132,21 @@ end
 # reachable only by a btsDMARD leaf missing from MOA_NODES; keeps csDMARD /
 # Cortisone throwing MethodError rather than this error
 mode_of_action(::Type{C}) where {C <: btsDMARD} = error("no MOA node for $C")
+
+"""
+    mode_of_action(d::AntiRheumaticDrug) -> Type{<:MOA}
+
+Project `d` (an [`AntiRheumaticDrug`](@ref)) onto its *mode of action* node — one
+of the types in [`moa_nodes()`](@ref), for instance [`TNFi`](@ref). See
+[`moa_symbol`](@ref) for the `Symbol` form, or [`drug_class`](@ref) for the
+coarser class node.
+
+# Examples
+```jldoctest
+julia> mode_of_action(classify("L04AB04"))  # adalimumab is a TNFi
+TNFi
+```
+"""
 mode_of_action(d::AntiRheumaticDrug) = mode_of_action(category(d))
 
 for T in CLASS_NODES
