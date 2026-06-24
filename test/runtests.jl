@@ -133,7 +133,7 @@ using DrugInterface
         @test !is_substance(classify("L04AB04"), "Methotrexate")
     end
 
-    using AntiRheumaticDrugs: mode_of_action, drug_class, MOA_NODES, CLASS_NODES
+    using AntiRheumaticDrugs: mode_of_action, drug_class
 
     @testset "level projections" begin
         @test mode_of_action(classify("L04AC07")) === IL6i      # tocilizumab
