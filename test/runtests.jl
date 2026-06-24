@@ -77,7 +77,7 @@ using DrugInterface
         @test !is_registered("ZZZZZZ")
         @test try_classify("ZZZZZZ") === nothing
         @test try_classify("L04AB04") !== nothing &&
-              try_classify("L04AB04").name == "Adalimumab"
+            try_classify("L04AB04").name == "Adalimumab"
         @test classify("L04AB04").name == "Adalimumab"
         @test category(classify("L04AB04")) === TNFi
         @test category(classify("H02AB06")) === Cortisone
@@ -163,6 +163,26 @@ using DrugInterface
         @test isdefined(@__MODULE__, :class_nodes)
     end
 
+    @testset "projection invariants (full registry)" begin
+        for d in values(AntiRheumaticDrugs.REGISTRY)
+            c = category(d)
+            # class projection: defined for every drug, lands on a class node
+            # that is an ancestor of (or equal to) the drug's category
+            dc = drug_class(d)
+            @test dc in class_nodes()
+            @test c <: dc
+            if is_btsdmard(d)
+                # MOA projection only for b/tsDMARDs
+                moa = mode_of_action(d)
+                @test moa in moa_nodes()
+                @test c <: moa
+            else
+                # csDMARD / Cortisone have no MOA node
+                @test_throws MethodError mode_of_action(d)
+            end
+        end
+    end
+
     using AntiRheumaticDrugs: label, pretty, moa_symbol, class_symbol
 
     @testset "materialization" begin
@@ -203,9 +223,9 @@ using DrugInterface
         # legacy ATC codes still present in SRQ data (2012-2024) map to the
         # same substance as their current codes (found via golden-master audit)
         @test category(classify("L04AA13")) === csDMARD &&
-              classify("L04AA13").name == "Leflunomide"
+            classify("L04AA13").name == "Leflunomide"
         @test category(classify("L04AA26")) === BAFFi &&
-              classify("L04AA26").name == "Belimumab"
+            classify("L04AA26").name == "Belimumab"
         # every expected substance present at least once
         expected = [
             "Betamethasone",
