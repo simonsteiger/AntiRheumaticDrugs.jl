@@ -84,7 +84,7 @@ julia> is_class(classify("L04AF01"), bDMARD)   # tofacitinib is a JAKi <: tsDMAR
 false
 ```
 """
-is_class(x, ::Type{T}) where {T<:DrugClass} = category(x) <: T
+is_class(x, ::Type{T}) where {T <: DrugClass} = category(x) <: T
 
 # primitive interface methods on the concrete registry type:
 is_cortisone(d::AntiRheumaticDrug) = is_class(d, Cortisone)
@@ -111,18 +111,48 @@ const MOA_NODES =
     (JAKi, PDE4i, TNFi, CD20i, IFNi, CD28i, BAFFi, IL1i, IL5i, IL6i, IL17i, IL23i, IL12_23i)
 const CLASS_NODES = (Cortisone, csDMARD, bDMARD, tsDMARD)
 
-# walk C and its supertypes, return the first that is in `nodes`
-function _project(::Type{C}, nodes) where {C<:DrugClass}
-    T = C
-    while T !== DrugClass
-        T in nodes && return T
-        T = supertype(T)
-    end
-    error("no level node found for $C in $nodes")
-end
+"""
+    moa_nodes() -> Tuple
 
-mode_of_action(::Type{C}) where {C<:btsDMARD} = _project(C, MOA_NODES)
+The tuple of all mode-of-action node types — the targets of
+[`mode_of_action`](@ref). For iterating MOAs (e.g. plot facets).
+"""
+moa_nodes() = MOA_NODES
+
+"""
+    class_nodes() -> Tuple
+
+The tuple of all class node types — the targets of [`drug_class`](@ref).
+"""
+class_nodes() = CLASS_NODES
+
+for T in MOA_NODES
+    @eval mode_of_action(::Type{<:$T}) = $T
+end
+# reachable only by a btsDMARD leaf missing from MOA_NODES; keeps csDMARD /
+# Cortisone throwing MethodError rather than this error
+mode_of_action(::Type{C}) where {C <: btsDMARD} = error("no MOA node for $C")
+
+"""
+    mode_of_action(d::AntiRheumaticDrug) -> Type{<:MOA}
+
+Project `d` (an [`AntiRheumaticDrug`](@ref)) onto its *mode of action* node — one
+of the types in [`moa_nodes()`](@ref), for instance [`TNFi`](@ref). See
+[`moa_symbol`](@ref) for the `Symbol` form, or [`drug_class`](@ref) for the
+coarser class node.
+
+# Examples
+```jldoctest
+julia> mode_of_action(classify("L04AB04"))  # adalimumab is a TNFi
+TNFi
+```
+"""
 mode_of_action(d::AntiRheumaticDrug) = mode_of_action(category(d))
+
+for T in CLASS_NODES
+    @eval drug_class(::Type{<:$T}) = $T
+end
+drug_class(::Type{C}) where {C <: DrugClass} = error("no class node for $C")
 
 """
     drug_class(x) -> Type{<:DrugClass}
@@ -138,7 +168,6 @@ julia> class_symbol(classify("L04AB04"))   # drug_class is bDMARD
 :bDMARD
 ```
 """
-drug_class(::Type{C}) where {C<:DrugClass} = _project(C, CLASS_NODES)
 drug_class(x) = drug_class(category(x))
 
 """
@@ -155,7 +184,7 @@ julia> label(TNFi)
 """
 label(::Type{T}) where {T} = Symbol(nameof(T))
 
-const _PRETTY = Dict{DataType,String}(IL12_23i => "IL-12/23")
+const _PRETTY = Dict{DataType, String}(IL12_23i => "IL-12/23")
 
 """
     pretty(T::Type) -> String

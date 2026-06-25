@@ -48,5 +48,6 @@ export is_class,
     is_substance
 export substance, mode_of_action, drug_class, label, pretty, moa_symbol, class_symbol
 export count_modes_of_action, is_d2t
+export moa_nodes, class_nodes
 
 end # module
