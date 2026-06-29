@@ -1,6 +1,6 @@
 name = "AntiRheumaticDrugs"
 uuid = "7123f3dd-e172-456f-9a19-c2b7ef93fd76"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["simonsteiger <simon.j.steiger@gmail.com> and contributors"]
 
 [deps]
