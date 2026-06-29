@@ -1,4 +1,4 @@
-const _ROWS = Tuple{DataType,String,String,AbstractRoute,Vector{String}}[
+const _ROWS = Tuple{DataType, String, String, AbstractRoute, Vector{String}}[
     # ---- Cortisone ----
     (Cortisone, "Betamethasone", "D05AX52", Topical(), String[]),
     (Cortisone, "Betamethasone", "D07AC01", Topical(), String[]),
@@ -44,6 +44,10 @@ const _ROWS = Tuple{DataType,String,String,AbstractRoute,Vector{String}}[
     (csDMARD, "Tacrolimus", "D11AH01", Topical(), String[]),
     (csDMARD, "Tacrolimus", "L04AD02", Systemic(), String[]),
     (csDMARD, "Voclosporin", "L04AD03", Systemic(), String[]),
+    # ---- csDMARD: conventional synthetics SRQ still records ----
+    (csDMARD, "Sodium aurothiomalate", "M01CB01", Systemic(), ["Myocrisin"]),
+    (csDMARD, "Auranofin", "M01CB03", Systemic(), ["Ridaura"]),
+    (csDMARD, "Penicillamine", "M01CC01", Systemic(), String[]),
     # ---- tsDMARD ----
     (JAKi, "Filgotinib", "L04AF04", Systemic(), ["Jyseleca"]),
     (JAKi, "Baricitinib", "L04AF02", Systemic(), ["Olumiant"]),
@@ -52,6 +56,7 @@ const _ROWS = Tuple{DataType,String,String,AbstractRoute,Vector{String}}[
     (PDE4i, "Apremilast", "L04AA32", Systemic(), ["Otezla"]),
     # ---- bDMARD ----
     (CD20i, "Obinutuzumab", "L01FA03", Systemic(), ["Gazyvaro"]),
+    (CD20i, "Ofatumumab", "L01XC10", Systemic(), ["Arzerra"]),
     (
         CD20i,
         "Rituximab",
@@ -156,7 +161,7 @@ const _ROWS = Tuple{DataType,String,String,AbstractRoute,Vector{String}}[
     (CD20i, "Obinutuzumab", "L01XC15", Systemic(), ["Gazyvaro"]),                                                                   # -> L01FA03, WHO 2022
 ]
 
-const REGISTRY = let d = Dict{String,AntiRheumaticDrug}()
+const REGISTRY = let d = Dict{String, AntiRheumaticDrug}()
     for (C, name, atc, route, brands) in _ROWS
         haskey(d, atc) && error("duplicate ATC code in registry: $atc")
         # NB: _ROWS column order is (C, name, atc, route, brands);

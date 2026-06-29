@@ -86,6 +86,10 @@ using DrugInterface
         @test category(classify("L04AA32")) === PDE4i      # apremilast
         @test category(classify("L04AA24")) === CD28i      # abatacept
         @test category(classify("L04AG04")) === BAFFi      # belimumab
+        @test category(classify("L01XC10")) === CD20i     # ofatumumab (Arzerra)
+        @test category(classify("M01CB01")) === csDMARD   # sodium aurothiomalate (gold)
+        @test category(classify("M01CB03")) === csDMARD   # auranofin (Ridaura)
+        @test category(classify("M01CC01")) === csDMARD   # penicillamine
         @test_throws KeyError classify("ZZZZZZ")
         # integrity: every key is a well-formed 5th-level ATC code.
         # Guards against any typo that produces a malformed code (safeguard 1).
@@ -272,6 +276,10 @@ using DrugInterface
             "Ustekinumab",
             "Abatacept",
             "Belimumab",
+            "Ofatumumab",
+            "Sodium aurothiomalate",
+            "Auranofin",
+            "Penicillamine",
         ]
         present = Set(d.name for d in values(REGISTRY))
         @test all(in(present), expected)
