@@ -24,6 +24,7 @@ is_tsdmard
 is_btsdmard
 is_dmard
 is_substance
+is_anonymous
 ```
 
 The abstract supertypes that anchor the interface are also re-exported:
