@@ -380,4 +380,11 @@ using DrugInterface
         @test is_anonymous(AnonymousDrug{TNFi}())
         @test !is_anonymous(classify("L04AB04"))   # adalimumab, a real drug
     end
+
+    @testset "anonymous excluded from mode counting" begin
+        # anonymous TNFi contributes no mode; the real JAKi (tofacitinib) does
+        @test count_modes_of_action([AnonymousDrug{TNFi}(), classify("L04AF01")]) == 1
+        @test count_modes_of_action([AnonymousDrug{TNFi}(), AnonymousDrug{JAKi}()]) == 0
+        @test !is_d2t([AnonymousDrug{TNFi}(), AnonymousDrug{JAKi}()])
+    end
 end

@@ -258,7 +258,7 @@ julia> count_modes_of_action([classify("L04AB04"), classify("L04AB01")])  # both
 ```
 """
 function count_modes_of_action(xs)
-    moas = (mode_of_action(category(x)) for x in xs if is_btsdmard(x))
+    moas = (mode_of_action(category(x)) for x in xs if is_btsdmard(x) && !is_anonymous(x))
     return length(unique(moas))
 end
 
