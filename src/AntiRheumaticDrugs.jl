@@ -7,6 +7,7 @@ include("registry.jl")
 include("api.jl")
 
 export AntiRheumaticDrug,
+    AnonymousDrug,
     DrugClass,
     Cortisone,
     csDMARD,

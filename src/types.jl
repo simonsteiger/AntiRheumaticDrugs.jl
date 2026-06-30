@@ -130,7 +130,7 @@ substance name with [`substance`](@ref), and the route with [`route_of`](@ref).
 Look one up by ATC code with [`classify`](@ref). Implements the DrugInterface
 `AbstractAntiRheumaticDrug` contract.
 """
-struct AntiRheumaticDrug{C<:DrugClass} <: DrugInterface.AbstractAntiRheumaticDrug
+struct AntiRheumaticDrug{C <: DrugClass} <: DrugInterface.AbstractAntiRheumaticDrug
     name::String
     atc::String
     brands::Vector{String}
@@ -151,3 +151,17 @@ julia> class_symbol(classify("L04AB04"))   # category is TNFi; class node is bDM
 ```
 """
 category(::AntiRheumaticDrug{C}) where {C} = C
+
+"""
+    AnonymousDrug{C<:DrugClass}
+
+A class-known, identity-unknown antirheumatic drug: carries its
+[`DrugClass`](@ref) `C` at the type level but holds no substance-level fields.
+Use it as a fallback when a record's drug class is known but its ATC code does
+not resolve (see [`classify`](@ref)). Class predicates work on it;
+[`substance`](@ref) and [`route_of`](@ref) return `missing`. Implements the
+DrugInterface `AbstractAntiRheumaticDrug` contract.
+"""
+struct AnonymousDrug{C <: DrugClass} <: DrugInterface.AbstractAntiRheumaticDrug end
+
+category(::AnonymousDrug{C}) where {C} = C

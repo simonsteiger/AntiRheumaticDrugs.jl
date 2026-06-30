@@ -350,4 +350,11 @@ using DrugInterface
         @test is_dmard(mtx)
         @test is_substance(mtx, "Methotrexate")
     end
+
+    @testset "AnonymousDrug type" begin
+        a = AnonymousDrug{csDMARD}()
+        @test a isa DrugInterface.AbstractAntiRheumaticDrug
+        @test category(a) === csDMARD
+        @test category(AnonymousDrug{TNFi}()) === TNFi
+    end
 end
