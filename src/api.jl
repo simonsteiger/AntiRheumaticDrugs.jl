@@ -86,7 +86,7 @@ false
 """
 is_class(x, ::Type{T}) where {T <: DrugClass} = category(x) <: T
 
-# primitive interface methods on the concrete registry type:
+# primitive interface methods, shared by AntiRheumaticDrug and AnonymousDrug:
 is_cortisone(d::AbstractAntiRheumaticDrug) = is_class(d, Cortisone)
 is_csdmard(d::AbstractAntiRheumaticDrug) = is_class(d, csDMARD)
 is_bdmard(d::AbstractAntiRheumaticDrug) = is_class(d, bDMARD)
