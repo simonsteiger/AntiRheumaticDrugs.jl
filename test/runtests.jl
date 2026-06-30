@@ -90,7 +90,7 @@ using DrugInterface
         @test category(classify("M01CB01")) === csDMARD   # sodium aurothiomalate (gold)
         @test category(classify("M01CB03")) === csDMARD   # auranofin (Ridaura)
         @test category(classify("M01CC01")) === csDMARD   # penicillamine
-        @test_throws KeyError classify("ZZZZZZ")
+        @test_throws ErrorException classify("ZZZZZZ")
         # integrity: every key is a well-formed 5th-level ATC code.
         # Guards against any typo that produces a malformed code (safeguard 1).
         let atc_pat = r"^[A-Z]\d{2}[A-Z]{2}\d{2}$"
@@ -349,5 +349,57 @@ using DrugInterface
         @test !is_btsdmard(mtx)
         @test is_dmard(mtx)
         @test is_substance(mtx, "Methotrexate")
+    end
+
+    @testset "AnonymousDrug type" begin
+        a = AnonymousDrug{csDMARD}()
+        @test a isa DrugInterface.AbstractAntiRheumaticDrug
+        @test category(a) === csDMARD
+        @test category(AnonymousDrug{TNFi}()) === TNFi
+    end
+
+    @testset "AnonymousDrug class predicates" begin
+        cs = AnonymousDrug{csDMARD}()
+        tnf = AnonymousDrug{TNFi}()
+        jak = AnonymousDrug{JAKi}()
+        @test is_csdmard(cs) && is_dmard(cs) && !is_btsdmard(cs)
+        @test is_bdmard(tnf) && is_btsdmard(tnf) && is_dmard(tnf) && !is_csdmard(tnf)
+        @test is_tsdmard(jak) && is_btsdmard(jak)
+        @test !is_cortisone(cs)
+    end
+
+    @testset "AnonymousDrug floor methods" begin
+        a = AnonymousDrug{csDMARD}()
+        @test ismissing(substance(a))
+        @test ismissing(route_of(a))
+        @test ismissing(mode_of_action(a))
+        @test ismissing(is_substance(a, "Methotrexate"))
+        @test drug_of(a) === a   # identity: the anonymous drug is the drug
+    end
+
+    @testset "is_anonymous" begin
+        @test is_anonymous(AnonymousDrug{TNFi}())
+        @test !is_anonymous(classify("L04AB04"))   # adalimumab, a real drug
+    end
+
+    @testset "anonymous excluded from mode counting" begin
+        # anonymous TNFi contributes no mode; the real JAKi (tofacitinib) does
+        @test count_modes_of_action([AnonymousDrug{TNFi}(), classify("L04AF01")]) == 1
+        @test count_modes_of_action([AnonymousDrug{TNFi}(), AnonymousDrug{JAKi}()]) == 0
+        @test !is_d2t([AnonymousDrug{TNFi}(), AnonymousDrug{JAKi}()])
+    end
+
+    @testset "fallback-aware classify" begin
+        # ATC resolves: fallback ignored, precise drug returned
+        @test substance(classify("L04AB04"; fallback = csDMARD)) == "Adalimumab"
+        @test category(classify("L04AB04"; fallback = csDMARD)) === TNFi
+        # ATC fails, fallback given: anonymous drug of that class
+        a = classify("NOPE"; fallback = csDMARD)
+        @test a isa AnonymousDrug && category(a) === csDMARD
+        @test is_anonymous(a)
+        # blank ATC takes the fallback path
+        @test category(classify(""; fallback = bDMARD)) === bDMARD
+        # ATC fails, no fallback: fail loud
+        @test_throws ErrorException classify("NOPE")
     end
 end

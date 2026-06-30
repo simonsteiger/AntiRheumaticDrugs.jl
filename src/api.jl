@@ -1,10 +1,16 @@
 """
-    classify(atc::AbstractString) -> AntiRheumaticDrug
+    classify(atc::AbstractString; fallback=nothing) -> AbstractAntiRheumaticDrug
 
-Look up the registered drug for an ATC code. Throws `KeyError` if the code is not
-registered — use [`try_classify`](@ref) for a `nothing`-returning variant, or
+Look up the registered drug for an ATC code. A resolved code always wins and
+returns the precise [`AntiRheumaticDrug`](@ref). If the code does not resolve and
+a `fallback::Type{<:DrugClass}` is supplied, return an
+[`AnonymousDrug`](@ref)`{fallback}` — a class-known, identity-unknown drug. If it
+does not resolve and no `fallback` is given, throw an error.
+
+Use [`try_classify`](@ref) for a `nothing`-returning variant, or
 [`is_registered`](@ref) to test first. Legacy (pre-WHO-revision) ATC codes are
-registered as aliases of their current code.
+registered as aliases of their current code. Callers coalesce `missing`/blank
+values before calling; `""` does not resolve and so takes the fallback path.
 
 # Examples
 ```jldoctest
@@ -13,9 +19,18 @@ julia> substance(classify("L04AB04"))
 
 julia> moa_symbol(classify("L04AB04"))
 :TNFi
+
+julia> category(classify("NOPE"; fallback=csDMARD))
+csDMARD
 ```
 """
-classify(atc::AbstractString)::AntiRheumaticDrug = REGISTRY[atc]
+function classify(atc::AbstractString; fallback::Union{Type{<:DrugClass}, Nothing} = nothing)
+    d = try_classify(atc)
+    d === nothing || return d
+    fallback === nothing &&
+        error("unclassifiable ATC '$atc' and no fallback class supplied")
+    return AnonymousDrug{fallback}()
+end
 
 """
     try_classify(atc::AbstractString) -> Union{AntiRheumaticDrug,Nothing}
@@ -45,12 +60,13 @@ julia> is_registered("L04AB04"), is_registered("NOT_A_CODE")
 is_registered(atc::AbstractString) = haskey(REGISTRY, atc)
 
 """
-    drug_of(d::AntiRheumaticDrug) -> AntiRheumaticDrug
+    drug_of(d::AbstractAntiRheumaticDrug) -> AbstractAntiRheumaticDrug
 
 Identity accessor returning the drug itself — a hook so treatment/window code can
-call `drug_of` uniformly across wrapper types.
+call `drug_of` uniformly across wrapper types. Defined on the interface supertype
+so it also covers [`AnonymousDrug`](@ref).
 """
-drug_of(d::AntiRheumaticDrug) = d
+drug_of(d::AbstractAntiRheumaticDrug) = d
 
 """
     route_of(d::AntiRheumaticDrug) -> AbstractRoute
@@ -66,7 +82,8 @@ Topical()
 route_of(d::AntiRheumaticDrug) = d.route
 
 import DrugInterface:
-    substance, mode_of_action, is_csdmard, is_bdmard, is_tsdmard, is_cortisone
+    substance, mode_of_action, is_csdmard, is_bdmard, is_tsdmard, is_cortisone,
+    is_anonymous
 
 """
     is_class(x, T::Type{<:DrugClass}) -> Bool
@@ -86,13 +103,25 @@ false
 """
 is_class(x, ::Type{T}) where {T <: DrugClass} = category(x) <: T
 
-# primitive interface methods on the concrete registry type:
-is_cortisone(d::AntiRheumaticDrug) = is_class(d, Cortisone)
-is_csdmard(d::AntiRheumaticDrug) = is_class(d, csDMARD)
-is_bdmard(d::AntiRheumaticDrug) = is_class(d, bDMARD)
-is_tsdmard(d::AntiRheumaticDrug) = is_class(d, tsDMARD)
+# primitive interface methods, shared by AntiRheumaticDrug and AnonymousDrug:
+is_cortisone(d::AbstractAntiRheumaticDrug) = is_class(d, Cortisone)
+is_csdmard(d::AbstractAntiRheumaticDrug) = is_class(d, csDMARD)
+is_bdmard(d::AbstractAntiRheumaticDrug) = is_class(d, bDMARD)
+is_tsdmard(d::AbstractAntiRheumaticDrug) = is_class(d, tsDMARD)
 
 substance(d::AntiRheumaticDrug) = d.name
+
+# AnonymousDrug carries no substance identity: substance, route, and mode of
+# action are all unknown by construction, so each floor accessor returns
+# `missing`. mode_of_action is never consulted during mode counting anyway
+# (count_modes_of_action guards with !is_anonymous).
+substance(::AnonymousDrug) = missing
+route_of(::AnonymousDrug) = missing
+mode_of_action(::AnonymousDrug) = missing
+
+# Override the DrugInterface default (is_anonymous(::AbstractDrug) = false); the
+# default already covers every concrete AntiRheumaticDrug.
+is_anonymous(::AnonymousDrug) = true
 
 """
     is_systemic(x) -> Bool
@@ -246,7 +275,7 @@ julia> count_modes_of_action([classify("L04AB04"), classify("L04AB01")])  # both
 ```
 """
 function count_modes_of_action(xs)
-    moas = (mode_of_action(category(x)) for x in xs if is_btsdmard(x))
+    moas = (mode_of_action(category(x)) for x in xs if is_btsdmard(x) && !is_anonymous(x))
     return length(unique(moas))
 end
 
