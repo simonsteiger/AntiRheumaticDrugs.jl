@@ -60,12 +60,13 @@ julia> is_registered("L04AB04"), is_registered("NOT_A_CODE")
 is_registered(atc::AbstractString) = haskey(REGISTRY, atc)
 
 """
-    drug_of(d::AntiRheumaticDrug) -> AntiRheumaticDrug
+    drug_of(d::AbstractAntiRheumaticDrug) -> AbstractAntiRheumaticDrug
 
 Identity accessor returning the drug itself — a hook so treatment/window code can
-call `drug_of` uniformly across wrapper types.
+call `drug_of` uniformly across wrapper types. Defined on the interface supertype
+so it also covers [`AnonymousDrug`](@ref).
 """
-drug_of(d::AntiRheumaticDrug) = d
+drug_of(d::AbstractAntiRheumaticDrug) = d
 
 """
     route_of(d::AntiRheumaticDrug) -> AbstractRoute
@@ -110,12 +111,13 @@ is_tsdmard(d::AbstractAntiRheumaticDrug) = is_class(d, tsDMARD)
 
 substance(d::AntiRheumaticDrug) = d.name
 
-# AnonymousDrug carries no fields: substance and route are unknown by
-# construction; :unknown satisfies the DrugInterface mode_of_action floor but is
-# never consulted during mode counting (see count_modes_of_action).
+# AnonymousDrug carries no substance identity: substance, route, and mode of
+# action are all unknown by construction, so each floor accessor returns
+# `missing`. mode_of_action is never consulted during mode counting anyway
+# (count_modes_of_action guards with !is_anonymous).
 substance(::AnonymousDrug) = missing
 route_of(::AnonymousDrug) = missing
-mode_of_action(::AnonymousDrug) = :unknown
+mode_of_action(::AnonymousDrug) = missing
 
 # Override the DrugInterface default (is_anonymous(::AbstractDrug) = false); the
 # default already covers every concrete AntiRheumaticDrug.

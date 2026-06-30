@@ -372,8 +372,9 @@ using DrugInterface
         a = AnonymousDrug{csDMARD}()
         @test ismissing(substance(a))
         @test ismissing(route_of(a))
-        @test mode_of_action(a) === :unknown
+        @test ismissing(mode_of_action(a))
         @test ismissing(is_substance(a, "Methotrexate"))
+        @test drug_of(a) === a   # identity: the anonymous drug is the drug
     end
 
     @testset "is_anonymous" begin
