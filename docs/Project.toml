@@ -3,3 +3,7 @@ AntiRheumaticDrugs = "7123f3dd-e172-456f-9a19-c2b7ef93fd76"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 DocumenterVitepress = "4710194d-e776-4893-9690-8d956a29c365"
 DrugInterface = "ecbac44d-373e-48a5-bcbb-08f349367545"
+
+[compat]
+Documenter = "1.17.0"
+DocumenterVitepress = "0.3.4"
