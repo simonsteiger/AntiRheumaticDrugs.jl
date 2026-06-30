@@ -94,6 +94,13 @@ is_tsdmard(d::AbstractAntiRheumaticDrug) = is_class(d, tsDMARD)
 
 substance(d::AntiRheumaticDrug) = d.name
 
+# AnonymousDrug carries no fields: substance and route are unknown by
+# construction; :unknown satisfies the DrugInterface mode_of_action floor but is
+# never consulted during mode counting (see count_modes_of_action).
+substance(::AnonymousDrug) = missing
+route_of(::AnonymousDrug) = missing
+mode_of_action(::AnonymousDrug) = :unknown
+
 """
     is_systemic(x) -> Bool
 

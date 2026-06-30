@@ -367,4 +367,12 @@ using DrugInterface
         @test is_tsdmard(jak) && is_btsdmard(jak)
         @test !is_cortisone(cs)
     end
+
+    @testset "AnonymousDrug floor methods" begin
+        a = AnonymousDrug{csDMARD}()
+        @test ismissing(substance(a))
+        @test ismissing(route_of(a))
+        @test mode_of_action(a) === :unknown
+        @test ismissing(is_substance(a, "Methotrexate"))
+    end
 end
