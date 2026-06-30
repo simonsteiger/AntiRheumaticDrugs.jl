@@ -1,10 +1,16 @@
 """
-    classify(atc::AbstractString) -> AntiRheumaticDrug
+    classify(atc::AbstractString; fallback=nothing) -> AbstractAntiRheumaticDrug
 
-Look up the registered drug for an ATC code. Throws `KeyError` if the code is not
-registered — use [`try_classify`](@ref) for a `nothing`-returning variant, or
+Look up the registered drug for an ATC code. A resolved code always wins and
+returns the precise [`AntiRheumaticDrug`](@ref). If the code does not resolve and
+a `fallback::Type{<:DrugClass}` is supplied, return an
+[`AnonymousDrug`](@ref)`{fallback}` — a class-known, identity-unknown drug. If it
+does not resolve and no `fallback` is given, throw an error.
+
+Use [`try_classify`](@ref) for a `nothing`-returning variant, or
 [`is_registered`](@ref) to test first. Legacy (pre-WHO-revision) ATC codes are
-registered as aliases of their current code.
+registered as aliases of their current code. Callers coalesce `missing`/blank
+values before calling; `""` does not resolve and so takes the fallback path.
 
 # Examples
 ```jldoctest
@@ -13,9 +19,18 @@ julia> substance(classify("L04AB04"))
 
 julia> moa_symbol(classify("L04AB04"))
 :TNFi
+
+julia> category(classify("NOPE"; fallback=csDMARD))
+csDMARD
 ```
 """
-classify(atc::AbstractString)::AntiRheumaticDrug = REGISTRY[atc]
+function classify(atc::AbstractString; fallback::Union{Type{<:DrugClass}, Nothing} = nothing)
+    d = try_classify(atc)
+    d === nothing || return d
+    fallback === nothing &&
+        error("unclassifiable ATC '$atc' and no fallback class supplied")
+    return AnonymousDrug{fallback}()
+end
 
 """
     try_classify(atc::AbstractString) -> Union{AntiRheumaticDrug,Nothing}

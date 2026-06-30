@@ -90,7 +90,7 @@ using DrugInterface
         @test category(classify("M01CB01")) === csDMARD   # sodium aurothiomalate (gold)
         @test category(classify("M01CB03")) === csDMARD   # auranofin (Ridaura)
         @test category(classify("M01CC01")) === csDMARD   # penicillamine
-        @test_throws KeyError classify("ZZZZZZ")
+        @test_throws ErrorException classify("ZZZZZZ")
         # integrity: every key is a well-formed 5th-level ATC code.
         # Guards against any typo that produces a malformed code (safeguard 1).
         let atc_pat = r"^[A-Z]\d{2}[A-Z]{2}\d{2}$"
@@ -386,5 +386,19 @@ using DrugInterface
         @test count_modes_of_action([AnonymousDrug{TNFi}(), classify("L04AF01")]) == 1
         @test count_modes_of_action([AnonymousDrug{TNFi}(), AnonymousDrug{JAKi}()]) == 0
         @test !is_d2t([AnonymousDrug{TNFi}(), AnonymousDrug{JAKi}()])
+    end
+
+    @testset "fallback-aware classify" begin
+        # ATC resolves: fallback ignored, precise drug returned
+        @test substance(classify("L04AB04"; fallback = csDMARD)) == "Adalimumab"
+        @test category(classify("L04AB04"; fallback = csDMARD)) === TNFi
+        # ATC fails, fallback given: anonymous drug of that class
+        a = classify("NOPE"; fallback = csDMARD)
+        @test a isa AnonymousDrug && category(a) === csDMARD
+        @test is_anonymous(a)
+        # blank ATC takes the fallback path
+        @test category(classify(""; fallback = bDMARD)) === bDMARD
+        # ATC fails, no fallback: fail loud
+        @test_throws ErrorException classify("NOPE")
     end
 end
