@@ -46,6 +46,7 @@ export is_class,
     is_btsdmard,
     is_dmard,
     is_systemic,
+    is_anonymous,
     is_substance
 export substance, mode_of_action, drug_class, label, pretty, moa_symbol, class_symbol
 export count_modes_of_action, is_d2t

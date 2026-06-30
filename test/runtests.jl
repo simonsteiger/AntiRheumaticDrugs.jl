@@ -375,4 +375,9 @@ using DrugInterface
         @test mode_of_action(a) === :unknown
         @test ismissing(is_substance(a, "Methotrexate"))
     end
+
+    @testset "is_anonymous" begin
+        @test is_anonymous(AnonymousDrug{TNFi}())
+        @test !is_anonymous(classify("L04AB04"))   # adalimumab, a real drug
+    end
 end

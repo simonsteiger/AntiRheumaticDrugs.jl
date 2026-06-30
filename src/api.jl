@@ -66,7 +66,8 @@ Topical()
 route_of(d::AntiRheumaticDrug) = d.route
 
 import DrugInterface:
-    substance, mode_of_action, is_csdmard, is_bdmard, is_tsdmard, is_cortisone
+    substance, mode_of_action, is_csdmard, is_bdmard, is_tsdmard, is_cortisone,
+    is_anonymous
 
 """
     is_class(x, T::Type{<:DrugClass}) -> Bool
@@ -100,6 +101,10 @@ substance(d::AntiRheumaticDrug) = d.name
 substance(::AnonymousDrug) = missing
 route_of(::AnonymousDrug) = missing
 mode_of_action(::AnonymousDrug) = :unknown
+
+# Override the DrugInterface default (is_anonymous(::AbstractDrug) = false); the
+# default already covers every concrete AntiRheumaticDrug.
+is_anonymous(::AnonymousDrug) = true
 
 """
     is_systemic(x) -> Bool
