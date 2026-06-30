@@ -357,4 +357,14 @@ using DrugInterface
         @test category(a) === csDMARD
         @test category(AnonymousDrug{TNFi}()) === TNFi
     end
+
+    @testset "AnonymousDrug class predicates" begin
+        cs = AnonymousDrug{csDMARD}()
+        tnf = AnonymousDrug{TNFi}()
+        jak = AnonymousDrug{JAKi}()
+        @test is_csdmard(cs) && is_dmard(cs) && !is_btsdmard(cs)
+        @test is_bdmard(tnf) && is_btsdmard(tnf) && is_dmard(tnf) && !is_csdmard(tnf)
+        @test is_tsdmard(jak) && is_btsdmard(jak)
+        @test !is_cortisone(cs)
+    end
 end
